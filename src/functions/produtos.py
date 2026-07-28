@@ -29,13 +29,17 @@ class Produtos:
             conn.close()
 
     @staticmethod
-    def buscar_por_nome(termo: str = "") -> list[Produto]:
-        # termo vazio retorna todos os produtos, ordenados por nome
+    def buscar(termo: str = "") -> list[Produto]:
+        # busca pelo nome ou pelo id; termo vazio retorna todos, ordenados por nome
         conn = get_connection()
         try:
             rows = conn.execute(
-                "SELECT * FROM produtos WHERE produto LIKE ? ORDER BY produto",
-                (f"%{termo}%",),
+                """
+                SELECT * FROM produtos
+                WHERE produto LIKE ? OR CAST(id AS TEXT) LIKE ?
+                ORDER BY produto
+                """,
+                (f"%{termo}%", f"{termo}%"),
             ).fetchall()
             return [Produtos._row_to_produto(row) for row in rows]
         finally:

@@ -1,4 +1,21 @@
+from dataclasses import dataclass
+
 from src.core.infra.database import Repasse as RepasseModel, RepasseItem, get_connection
+
+
+@dataclass
+class ItemDetalhado:
+    """Item do repasse já com os dados do produto e os subtotais calculados."""
+    item_id: int
+    produto_id: int
+    produto: str
+    quantidade: int
+    peso_unitario: float
+    cubagem_unitaria: float
+    custo_unitario: float
+    peso_subtotal: float
+    cubagem_subtotal: float
+    valor_subtotal: float
 
 
 class Repasse:
@@ -60,6 +77,48 @@ class Repasse:
             ).fetchall()
             return [
                 RepasseItem(row["id"], row["repasse_id"], row["produto_id"], row["quantidade"])
+                for row in rows
+            ]
+        finally:
+            conn.close()
+
+    @staticmethod
+    def listar_todos() -> list[RepasseModel]:
+        conn = get_connection()
+        try:
+            rows = conn.execute("SELECT * FROM repasses ORDER BY id DESC").fetchall()
+            return [Repasse._row_to_repasse(row) for row in rows]
+        finally:
+            conn.close()
+
+    @staticmethod
+    def listar_itens_detalhados(repasse_id: int) -> list[ItemDetalhado]:
+        conn = get_connection()
+        try:
+            rows = conn.execute(
+                """
+                SELECT ri.id AS item_id, p.id AS produto_id, p.produto, ri.quantidade,
+                       p.peso, p.cubagem, p.custo_com_desconto_e_ipi
+                FROM repasse_itens ri
+                JOIN produtos p ON p.id = ri.produto_id
+                WHERE ri.repasse_id = ?
+                ORDER BY ri.id
+                """,
+                (repasse_id,),
+            ).fetchall()
+            return [
+                ItemDetalhado(
+                    item_id=row["item_id"],
+                    produto_id=row["produto_id"],
+                    produto=row["produto"],
+                    quantidade=row["quantidade"],
+                    peso_unitario=row["peso"],
+                    cubagem_unitaria=row["cubagem"],
+                    custo_unitario=row["custo_com_desconto_e_ipi"],
+                    peso_subtotal=row["quantidade"] * row["peso"],
+                    cubagem_subtotal=row["quantidade"] * row["cubagem"],
+                    valor_subtotal=row["quantidade"] * row["custo_com_desconto_e_ipi"],
+                )
                 for row in rows
             ]
         finally:
