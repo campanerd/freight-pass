@@ -1,0 +1,26 @@
+# Ambiente virtual
+.venv/
+venv/
+
+# Variáveis de ambiente / segredos
+.env
+
+# IDE
+.idea/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+build/
+dist/
+
+# Banco de dados local (SQLite)
+*.db
+*.sqlite
+*.sqlite3
+
+# SO
+.DS_Store
+Thumbs.db
