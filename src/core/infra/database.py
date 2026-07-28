@@ -9,6 +9,7 @@ DB_PATH = Path(__file__).resolve().parents[3] / "freight_pass.db"
 @dataclass
 class Produto:
     id: int | None
+    codigo: str
     produto: str
     descricao: str | None
     cx: int
@@ -51,6 +52,7 @@ def init_db() -> None:
             """
             CREATE TABLE IF NOT EXISTS produtos (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
+                codigo TEXT NOT NULL UNIQUE,
                 produto TEXT NOT NULL,
                 descricao TEXT,
                 cx INTEGER,

@@ -3,19 +3,20 @@ from src.core.infra.database import Produto, get_connection
 
 class Produtos:
     @staticmethod
-    def create(produto: str, descricao: str | None, cx: int, ncm: str,
+    def create(codigo: str, produto: str, descricao: str | None, cx: int, ncm: str,
                ipi: float, custo_com_desconto_e_ipi: float, peso: float, cubagem: float) -> Produto:
         conn = get_connection()
         try:
             cursor = conn.execute(
                 """
-                INSERT INTO produtos (produto, descricao, cx, ncm, ipi, custo_com_desconto_e_ipi, peso, cubagem)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO produtos (codigo, produto, descricao, cx, ncm, ipi, custo_com_desconto_e_ipi, peso, cubagem)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
-                (produto, descricao, cx, ncm, ipi, custo_com_desconto_e_ipi, peso, cubagem),
+                (codigo, produto, descricao, cx, ncm, ipi, custo_com_desconto_e_ipi, peso, cubagem),
             )
             conn.commit()
-            return Produto(cursor.lastrowid, produto, descricao, cx, ncm, ipi, custo_com_desconto_e_ipi, peso, cubagem)
+            return Produto(cursor.lastrowid, codigo, produto, descricao, cx, ncm, ipi,
+                           custo_com_desconto_e_ipi, peso, cubagem)
         finally:
             conn.close()
 
@@ -30,28 +31,29 @@ class Produtos:
 
     @staticmethod
     def buscar(termo: str = "") -> list[Produto]:
-        # busca pelo nome ou pelo id; termo vazio retorna todos, ordenados por nome
+        # busca pelo nome, pelo código do cliente ou pelo id; termo vazio retorna todos
         conn = get_connection()
         try:
             rows = conn.execute(
                 """
                 SELECT * FROM produtos
-                WHERE produto LIKE ? OR CAST(id AS TEXT) LIKE ?
+                WHERE produto LIKE ? OR codigo LIKE ? OR CAST(id AS TEXT) LIKE ?
                 ORDER BY produto
                 """,
-                (f"%{termo}%", f"{termo}%"),
+                (f"%{termo}%", f"%{termo}%", f"{termo}%"),
             ).fetchall()
             return [Produtos._row_to_produto(row) for row in rows]
         finally:
             conn.close()
 
     @staticmethod
-    def update(produto_id: int, produto: str | None = None, descricao: str | None = None,
-               cx: int | None = None, ncm: str | None = None, ipi: float | None = None,
-               custo_com_desconto_e_ipi: float | None = None, peso: float | None = None,
-               cubagem: float | None = None) -> None:
+    def update(produto_id: int, codigo: str | None = None, produto: str | None = None,
+               descricao: str | None = None, cx: int | None = None, ncm: str | None = None,
+               ipi: float | None = None, custo_com_desconto_e_ipi: float | None = None,
+               peso: float | None = None, cubagem: float | None = None) -> None:
         # só altera os campos enviados (None mantém o valor atual)
         campos = {
+            "codigo": codigo,
             "produto": produto,
             "descricao": descricao,
             "cx": cx,
@@ -86,6 +88,7 @@ class Produtos:
     def _row_to_produto(row) -> Produto:
         return Produto(
             id=row["id"],
+            codigo=row["codigo"],
             produto=row["produto"],
             descricao=row["descricao"],
             cx=row["cx"],

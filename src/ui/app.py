@@ -19,8 +19,8 @@ class App(ctk.CTk):
         ctk.set_appearance_mode("dark")
 
         self.title("FreightPass")
-        self.geometry("1280x760")
-        self.minsize(1060, 640)
+        self.geometry("1460x880")
+        self.minsize(1180, 720)
         self.configure(fg_color=tema.FUNDO)
 
         self.grid_columnconfigure(1, weight=1)
@@ -35,7 +35,7 @@ class App(ctk.CTk):
         self.mostrar("repasses")
 
     def _montar_sidebar(self) -> None:
-        barra = ctk.CTkFrame(self, fg_color=tema.SIDEBAR, corner_radius=0, width=232)
+        barra = ctk.CTkFrame(self, fg_color=tema.SIDEBAR, corner_radius=0, width=280)
         barra.grid(row=0, column=0, sticky="nsw")
         barra.grid_propagate(False)
         barra.grid_rowconfigure(2, weight=1)
@@ -55,7 +55,7 @@ class App(ctk.CTk):
         for linha, (chave, rotulo, _classe) in enumerate(PAGINAS):
             botao = ctk.CTkButton(
                 navegacao, text=rotulo, command=lambda c=chave: self.mostrar(c),
-                height=44, corner_radius=tema.RAIO, font=tema.FONTE_CORPO, anchor="w",
+                height=52, corner_radius=tema.RAIO, font=tema.FONTE_SUBTITULO, anchor="w",
                 fg_color="transparent", hover_color=tema.NEUTRO_HOVER, text_color=tema.TEXTO_SUAVE,
             )
             botao.grid(row=linha, column=0, sticky="ew", pady=3)

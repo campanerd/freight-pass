@@ -24,13 +24,21 @@ PERIGO_HOVER = ("#B91C1C", "#DC2626")
 NEUTRO = ("#EDEFF3", "#2A2F3A")
 NEUTRO_HOVER = ("#E1E4EA", "#343A47")
 
-# Tipografia — tuplas simples (não CTkFont) para poder usar antes da janela existir
-FONTE_TITULO = ("Segoe UI Semibold", 22)
-FONTE_SUBTITULO = ("Segoe UI Semibold", 15)
-FONTE_CORPO = ("Segoe UI", 13)
-FONTE_PEQUENA = ("Segoe UI", 11)
-FONTE_METRICA = ("Segoe UI Semibold", 24)
-FONTE_LOGO = ("Segoe UI Semibold", 20)
+# Tipografia — tuplas simples (não CTkFont) para poder usar antes da janela existir.
+# Para deixar tudo maior/menor de uma vez, ajuste estes números junto com as
+# alturas abaixo (senão o texto maior fica cortado dentro dos campos).
+FONTE_TITULO = ("Segoe UI Semibold", 28)
+FONTE_SUBTITULO = ("Segoe UI Semibold", 19)
+FONTE_CORPO = ("Segoe UI", 16)
+FONTE_PEQUENA = ("Segoe UI", 14)
+FONTE_METRICA = ("Segoe UI Semibold", 32)
+FONTE_LOGO = ("Segoe UI Semibold", 25)
+
+# Dimensões que acompanham a tipografia
+ALTURA_CAMPO = 46
+ALTURA_BOTAO = 46
+ALTURA_BOTAO_PEQUENO = 40
+ALTURA_LINHA_TABELA = 42
 
 RAIO = 10
 

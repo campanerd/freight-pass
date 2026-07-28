@@ -5,9 +5,9 @@ import customtkinter as ctk
 from src.ui import tema
 
 MAX_SUGESTOES = 8
-ALTURA_LINHA = 44
+ALTURA_LINHA = 54
 ESPACO_LINHA = 3
-LARGURA_MINIMA = 360
+LARGURA_MINIMA = 440
 
 
 class AutocompleteProduto(ctk.CTkFrame):
@@ -16,7 +16,7 @@ class AutocompleteProduto(ctk.CTkFrame):
     buscar_fn(termo) -> lista de produtos; on_select(produto) é chamado ao escolher um.
     """
 
-    def __init__(self, master, buscar_fn, on_select, placeholder="Busque pelo nome ou id do produto…", **kwargs):
+    def __init__(self, master, buscar_fn, on_select, placeholder="Busque pelo código ou nome do produto…", **kwargs):
         super().__init__(master, fg_color="transparent", **kwargs)
         self.buscar_fn = buscar_fn
         self.on_select = on_select
@@ -27,7 +27,7 @@ class AutocompleteProduto(ctk.CTkFrame):
 
         self.grid_columnconfigure(0, weight=1)
         self.entry = ctk.CTkEntry(
-            self, placeholder_text=placeholder, height=38, font=tema.FONTE_CORPO,
+            self, placeholder_text=placeholder, height=tema.ALTURA_CAMPO, font=tema.FONTE_CORPO,
             corner_radius=tema.RAIO, border_color=tema.BORDA, fg_color=tema.CARD,
         )
         self.entry.grid(row=0, column=0, sticky="ew")
@@ -122,7 +122,7 @@ class AutocompleteProduto(ctk.CTkFrame):
         linha.grid_columnconfigure(0, weight=1)
         linha.grid_rowconfigure(0, weight=1)
 
-        nome = ctk.CTkLabel(linha, text=f"#{produto.id}   {produto.produto}", font=tema.FONTE_CORPO,
+        nome = ctk.CTkLabel(linha, text=f"{produto.codigo}   {produto.produto}", font=tema.FONTE_CORPO,
                             text_color=tema.TEXTO, anchor="w")
         nome.grid(row=0, column=0, sticky="ew", padx=(12, 6))
 

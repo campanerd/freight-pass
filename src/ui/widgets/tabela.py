@@ -24,7 +24,7 @@ def aplicar_estilo() -> None:
         background=fundo,
         fieldbackground=fundo,
         foreground=texto,
-        rowheight=34,
+        rowheight=tema.ALTURA_LINHA_TABELA,
         borderwidth=0,
         font=tema.FONTE_CORPO,
     )
@@ -34,7 +34,7 @@ def aplicar_estilo() -> None:
         foreground=tema.cor(tema.TEXTO_SUAVE),
         relief="flat",
         borderwidth=0,
-        padding=(10, 8),
+        padding=(12, 11),
         font=tema.FONTE_PEQUENA,
     )
     style.map(

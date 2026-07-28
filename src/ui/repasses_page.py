@@ -11,12 +11,12 @@ from src.ui.widgets.autocomplete import AutocompleteProduto
 from src.ui.widgets.tabela import Tabela
 
 COLUNAS = [
-    ("produto", "Produto", 220, "w"),
-    ("qtd", "Qtd", 70, "center"),
-    ("peso_un", "Peso un.", 110, "e"),
-    ("peso_sub", "Peso total", 120, "e"),
-    ("cub_sub", "Cubagem total", 130, "e"),
-    ("valor_sub", "Valor total", 130, "e"),
+    ("produto", "Produto", 230, "w"),
+    ("qtd", "Qtd", 75, "center"),
+    ("peso_un", "Peso un.", 115, "e"),
+    ("peso_sub", "Peso total", 125, "e"),
+    ("cub_sub", "Cubagem total", 145, "e"),
+    ("valor_sub", "Valor total", 135, "e"),
 ]
 
 
@@ -37,7 +37,7 @@ class RepassesPage(ctk.CTkFrame):
 
     def _montar_lista(self) -> None:
         painel = ctk.CTkFrame(self, fg_color=tema.CARD, corner_radius=tema.RAIO,
-                              border_width=1, border_color=tema.BORDA, width=300)
+                              border_width=1, border_color=tema.BORDA, width=350)
         painel.grid(row=0, column=0, sticky="nsw", padx=(0, 18))
         painel.grid_propagate(False)
         painel.grid_rowconfigure(1, weight=1)
@@ -48,9 +48,9 @@ class RepassesPage(ctk.CTkFrame):
         cabecalho.grid_columnconfigure(0, weight=1)
         ctk.CTkLabel(cabecalho, text="Repasses", font=tema.FONTE_SUBTITULO,
                      text_color=tema.TEXTO, anchor="w").grid(row=0, column=0, sticky="w")
-        ctk.CTkButton(cabecalho, text="+ Novo", command=self._novo_repasse, width=76, height=32,
-                      corner_radius=8, font=tema.FONTE_CORPO, fg_color=tema.ACENTO,
-                      hover_color=tema.ACENTO_HOVER).grid(row=0, column=1)
+        ctk.CTkButton(cabecalho, text="+ Novo", command=self._novo_repasse, width=100,
+                      height=tema.ALTURA_BOTAO_PEQUENO, corner_radius=8, font=tema.FONTE_CORPO,
+                      fg_color=tema.ACENTO, hover_color=tema.ACENTO_HOVER).grid(row=0, column=1)
 
         self.lista = ctk.CTkScrollableFrame(painel, fg_color="transparent")
         self.lista.grid(row=1, column=0, sticky="nsew", padx=8, pady=(0, 12))
@@ -92,9 +92,9 @@ class RepassesPage(ctk.CTkFrame):
                                    text_color=tema.TEXTO, anchor="w")
         self.titulo.grid(row=0, column=0, sticky="w")
         self.botao_excluir = ctk.CTkButton(
-            topo, text="Excluir repasse", command=self._excluir_repasse, width=140, height=38,
-            corner_radius=tema.RAIO, font=tema.FONTE_CORPO, fg_color="transparent",
-            hover_color=tema.NEUTRO_HOVER, text_color=tema.PERIGO,
+            topo, text="Excluir repasse", command=self._excluir_repasse, width=180,
+            height=tema.ALTURA_BOTAO, corner_radius=tema.RAIO, font=tema.FONTE_CORPO,
+            fg_color="transparent", hover_color=tema.NEUTRO_HOVER, text_color=tema.PERIGO,
             border_width=1, border_color=tema.BORDA)
         self.botao_excluir.grid(row=0, column=1)
 
@@ -117,16 +117,17 @@ class RepassesPage(ctk.CTkFrame):
                                                 on_select=self._produto_selecionado)
         self.autocomplete.grid(row=0, column=0, sticky="ew", padx=(14, 8), pady=14)
 
-        self.quantidade = ctk.CTkEntry(adicionar, placeholder_text="Qtd", width=90, height=38,
-                                       font=tema.FONTE_CORPO, corner_radius=tema.RAIO,
-                                       border_color=tema.BORDA, fg_color=tema.CARD_ELEVADO,
-                                       justify="center")
+        self.quantidade = ctk.CTkEntry(adicionar, placeholder_text="Qtd", width=110,
+                                       height=tema.ALTURA_CAMPO, font=tema.FONTE_CORPO,
+                                       corner_radius=tema.RAIO, border_color=tema.BORDA,
+                                       fg_color=tema.CARD_ELEVADO, justify="center")
         self.quantidade.grid(row=0, column=1, pady=14)
         self.quantidade.bind("<Return>", lambda _e: self._adicionar_item())
 
-        ctk.CTkButton(adicionar, text="Adicionar", command=self._adicionar_item, width=120, height=38,
-                      corner_radius=tema.RAIO, font=tema.FONTE_CORPO, fg_color=tema.ACENTO,
-                      hover_color=tema.ACENTO_HOVER).grid(row=0, column=2, padx=14, pady=14)
+        ctk.CTkButton(adicionar, text="Adicionar", command=self._adicionar_item, width=150,
+                      height=tema.ALTURA_CAMPO, corner_radius=tema.RAIO, font=tema.FONTE_CORPO,
+                      fg_color=tema.ACENTO, hover_color=tema.ACENTO_HOVER).grid(
+            row=0, column=2, padx=14, pady=14)
 
         self.dica = ctk.CTkLabel(adicionar, text="", font=tema.FONTE_PEQUENA,
                                  text_color=tema.TEXTO_SUAVE, anchor="w")
@@ -140,8 +141,8 @@ class RepassesPage(ctk.CTkFrame):
         rodape.grid(row=4, column=0, sticky="ew", pady=(10, 0))
         rodape.grid_columnconfigure(0, weight=1)
         ctk.CTkButton(rodape, text="Remover item selecionado", command=self._remover_item,
-                      width=200, height=36, corner_radius=tema.RAIO, font=tema.FONTE_CORPO,
-                      fg_color=tema.NEUTRO, hover_color=tema.NEUTRO_HOVER,
+                      width=260, height=tema.ALTURA_BOTAO_PEQUENO, corner_radius=tema.RAIO,
+                      font=tema.FONTE_CORPO, fg_color=tema.NEUTRO, hover_color=tema.NEUTRO_HOVER,
                       text_color=tema.TEXTO).grid(row=0, column=1)
 
     def _criar_metrica(self, master, coluna: int, rotulo: str, cor_valor) -> ctk.CTkLabel:
