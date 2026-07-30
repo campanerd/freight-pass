@@ -1,9 +1,20 @@
+import os
 import sqlite3
 from dataclasses import dataclass
 from pathlib import Path
 
-# parents[3]: infra -> core -> src -> raiz do projeto, onde o .db deve ficar
-DB_PATH = Path(__file__).resolve().parents[3] / "freight_pass.db"
+
+def _pasta_dados() -> Path:
+    # %LOCALAPPDATA% no Windows — estável independente de onde o app rode a partir
+    # (importante pro executável empacotado, que extrai os arquivos numa pasta temporária
+    # diferente a cada execução; se o banco morasse lá, os dados sumiriam a cada abertura)
+    base = os.getenv("LOCALAPPDATA") or str(Path.home())
+    pasta = Path(base) / "FreightPass"
+    pasta.mkdir(parents=True, exist_ok=True)
+    return pasta
+
+
+DB_PATH = _pasta_dados() / "freight_pass.db"
 
 
 @dataclass
