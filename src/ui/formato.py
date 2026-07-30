@@ -25,6 +25,14 @@ def percentual(valor: float | None) -> str:
     return f"{decimal(valor, 2)}%" if valor is not None else "—"
 
 
+def numero_sem_zeros(valor: float | None, casas_max: int = 2) -> str:
+    """Ex: 275.0 -> '275', 275.5 -> '275,5' — usado no texto pra transportadora."""
+    if valor is None:
+        return "—"
+    texto = f"{valor:.{casas_max}f}".rstrip("0").rstrip(".")
+    return (texto or "0").replace(".", ",")
+
+
 def ler_decimal(texto: str) -> float | None:
     """Converte texto digitado ('12,50' ou '12.50') em float. None se inválido/vazio."""
     texto = (texto or "").strip().replace(".", "").replace(",", ".") if "," in (texto or "") else (texto or "").strip()
