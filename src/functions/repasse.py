@@ -1,6 +1,13 @@
+import math
+import os
 from dataclasses import dataclass
 
 from src.core.infra.database import Repasse as RepasseModel, RepasseItem, get_connection
+
+# Nome/CNPJ do remetente ficam no .env (não versionado) por serem dados da empresa do
+# cliente — lidos em tempo de chamada, não na importação, pra funcionar em qualquer
+# ordem de import (inclusive em testes que não passam por main.py/carregar_env()).
+FRETE_PADRAO = "CIF"
 
 
 @dataclass
@@ -10,12 +17,20 @@ class ItemDetalhado:
     produto_id: int
     produto: str
     quantidade: int
+    cx: int
     peso_unitario: float
     cubagem_unitaria: float
     custo_unitario: float
     peso_subtotal: float
     cubagem_subtotal: float
     valor_subtotal: float
+
+    @property
+    def caixas(self) -> int:
+        """Quantas caixas essa linha ocupa (arredondado pra cima; cx=0 conta como 1 caixa)."""
+        if not self.cx:
+            return 1
+        return math.ceil(self.quantidade / self.cx)
 
 
 class Repasse:
@@ -97,7 +112,7 @@ class Repasse:
         try:
             rows = conn.execute(
                 """
-                SELECT ri.id AS item_id, p.id AS produto_id, p.produto, ri.quantidade,
+                SELECT ri.id AS item_id, p.id AS produto_id, p.produto, ri.quantidade, p.cx,
                        p.peso, p.cubagem, p.custo_com_desconto_e_ipi
                 FROM repasse_itens ri
                 JOIN produtos p ON p.id = ri.produto_id
@@ -112,6 +127,7 @@ class Repasse:
                     produto_id=row["produto_id"],
                     produto=row["produto"],
                     quantidade=row["quantidade"],
+                    cx=row["cx"],
                     peso_unitario=row["peso"],
                     cubagem_unitaria=row["cubagem"],
                     custo_unitario=row["custo_com_desconto_e_ipi"],
@@ -123,6 +139,28 @@ class Repasse:
             ]
         finally:
             conn.close()
+
+    @staticmethod
+    def montar_texto_transportadora(repasse_id: int, destino: str, cnpj_destino: str, cep_destino: str) -> str:
+        from src.ui import formato  # import local: evita a camada de funções depender da UI por padrão
+
+        repasse = Repasse.read(repasse_id)
+        itens = Repasse.listar_itens_detalhados(repasse_id)
+        volumes = sum(item.caixas for item in itens)
+
+        return (
+            f"DESTINO : {destino}\n"
+            f"CNPJ: {cnpj_destino}\n"
+            f"CEP : {cep_destino}\n"
+            f" PESO {formato.numero_sem_zeros(repasse.peso_total)}\n"
+            f"CUBAGEM : {formato.decimal(repasse.cubagem_total, 2)}\n"
+            f"{volumes} VOLUMES\n"
+            f"VALOR DA NOTA :  {formato.decimal(repasse.valor_total, 2)}\n"
+            f"FRETE:{FRETE_PADRAO}\n"
+            f"\n\n"
+            f"REMETENTE: {os.getenv('REMETENTE_NOME', '')}\n"
+            f"CNPJ: {os.getenv('REMETENTE_CNPJ', '')}"
+        )
 
     @staticmethod
     def delete(repasse_id: int) -> None:

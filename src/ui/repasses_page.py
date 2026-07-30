@@ -7,6 +7,7 @@ import customtkinter as ctk
 from src.functions.produtos import Produtos
 from src.functions.repasse import Repasse
 from src.ui import formato, tema
+from src.ui.texto_transportadora_dialog import TextoTransportadoraDialog
 from src.ui.widgets.autocomplete import AutocompleteProduto
 from src.ui.widgets.tabela import Tabela
 
@@ -91,12 +92,18 @@ class RepassesPage(ctk.CTkFrame):
         self.titulo = ctk.CTkLabel(topo, text="Nenhum repasse selecionado", font=tema.FONTE_TITULO,
                                    text_color=tema.TEXTO, anchor="w")
         self.titulo.grid(row=0, column=0, sticky="w")
+        self.botao_transportadora = ctk.CTkButton(
+            topo, text="Gerar texto p/ transportadora", command=self._gerar_texto_transportadora,
+            width=260, height=tema.ALTURA_BOTAO, corner_radius=tema.RAIO, font=tema.FONTE_CORPO,
+            fg_color=tema.ACENTO_SUAVE, hover_color=tema.NEUTRO_HOVER, text_color=tema.ACENTO)
+        self.botao_transportadora.grid(row=0, column=1, padx=(0, 10))
+
         self.botao_excluir = ctk.CTkButton(
             topo, text="Excluir repasse", command=self._excluir_repasse, width=180,
             height=tema.ALTURA_BOTAO, corner_radius=tema.RAIO, font=tema.FONTE_CORPO,
             fg_color="transparent", hover_color=tema.NEUTRO_HOVER, text_color=tema.PERIGO,
             border_width=1, border_color=tema.BORDA)
-        self.botao_excluir.grid(row=0, column=1)
+        self.botao_excluir.grid(row=0, column=2)
 
         # métricas
         metricas = ctk.CTkFrame(self.detalhe, fg_color="transparent")
@@ -183,6 +190,7 @@ class RepassesPage(ctk.CTkFrame):
         if self.repasse_atual is None:
             self.titulo.configure(text="Nenhum repasse selecionado")
             self.botao_excluir.configure(state="disabled")
+            self.botao_transportadora.configure(state="disabled")
             for metrica in (self.metrica_peso, self.metrica_cubagem, self.metrica_valor):
                 metrica.configure(text="—")
             self.tabela.preencher([])
@@ -192,6 +200,7 @@ class RepassesPage(ctk.CTkFrame):
         self.repasse_atual = repasse
         self.titulo.configure(text=f"Repasse #{repasse.id}")
         self.botao_excluir.configure(state="normal")
+        self.botao_transportadora.configure(state="normal")
         self.metrica_peso.configure(text=formato.peso(repasse.peso_total))
         self.metrica_cubagem.configure(text=formato.cubagem(repasse.cubagem_total))
         self.metrica_valor.configure(text=formato.moeda(repasse.valor_total))
@@ -219,6 +228,11 @@ class RepassesPage(ctk.CTkFrame):
             Repasse.delete(self.repasse_atual.id)
             self.repasse_atual = None
             self.recarregar()
+
+    def _gerar_texto_transportadora(self) -> None:
+        if self.repasse_atual is None:
+            return messagebox.showinfo("Gerar texto", "Selecione um repasse primeiro.")
+        TextoTransportadoraDialog(self.winfo_toplevel(), self.repasse_atual.id)
 
     def _produto_selecionado(self, produto) -> None:
         self.produto_escolhido = produto
